@@ -3,3 +3,8 @@ D:\MyStuff\Personal\WebDev\DesignPatterns_HeadFirst\DesignPatterns_HeadFirst\bin
 D:\MyStuff\Personal\WebDev\DesignPatterns_HeadFirst\DesignPatterns_HeadFirst\bin\Debug\DesignPatterns_HeadFirst.pdb
 D:\MyStuff\Personal\WebDev\DesignPatterns_HeadFirst\DesignPatterns_HeadFirst\obj\Debug\DesignPatterns_HeadFirst.exe
 D:\MyStuff\Personal\WebDev\DesignPatterns_HeadFirst\DesignPatterns_HeadFirst\obj\Debug\DesignPatterns_HeadFirst.pdb
+C:\MyStuff\WebDev\LearningLINQ\DesignPatterns_HeadFirst\obj\Debug\DesignPatterns_HeadFirst.exe
+C:\MyStuff\WebDev\LearningLINQ\DesignPatterns_HeadFirst\obj\Debug\DesignPatterns_HeadFirst.pdb
+C:\MyStuff\WebDev\LearningLINQ\DesignPatterns_HeadFirst\bin\Debug\DesignPatterns_HeadFirst.exe
+C:\MyStuff\WebDev\LearningLINQ\DesignPatterns_HeadFirst\bin\Debug\DesignPatterns_HeadFirst.pdb
+C:\MyStuff\WebDev\LearningLINQ\DesignPatterns_HeadFirst\obj\Debug\ResolveAssemblyReference.cache
