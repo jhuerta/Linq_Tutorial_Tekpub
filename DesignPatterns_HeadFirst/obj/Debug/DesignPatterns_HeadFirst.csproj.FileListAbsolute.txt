@@ -8,3 +8,4 @@ C:\MyStuff\WebDev\LearningLINQ\DesignPatterns_HeadFirst\obj\Debug\DesignPatterns
 C:\MyStuff\WebDev\LearningLINQ\DesignPatterns_HeadFirst\bin\Debug\DesignPatterns_HeadFirst.exe
 C:\MyStuff\WebDev\LearningLINQ\DesignPatterns_HeadFirst\bin\Debug\DesignPatterns_HeadFirst.pdb
 C:\MyStuff\WebDev\LearningLINQ\DesignPatterns_HeadFirst\obj\Debug\ResolveAssemblyReference.cache
+D:\MyStuff\Personal\WebDev\DesignPatterns_HeadFirst\DesignPatterns_HeadFirst\bin\Debug\DesignPatterns_HeadFirst.exe.config

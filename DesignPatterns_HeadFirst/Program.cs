@@ -1,50 +1,687 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
+using System.Xml.Linq;
 namespace DesignPatterns_HeadFirst
 {
     class Program
     {
         static void Main(string[] args)
         {
-            var user = new User();
+            Lesson_8();
+            //Lesson_7();
 
-
-            Lesson_5_1s();
+            //Lesson_6();
+            //Lesson_5_1s();
             //Lesson_5Bis();
             //Lesson_5();
             //Lesson_4();
-            //Lesson_3();
+            //Lesson_3(); 
             //Lesson_2();
             //Lesson_1();
         }
 
 
+        
+
+
+
+
+
+        private static void Lesson_8()
+        {
+            var id = "Id";
+            var firstName = "firstName";
+            var lastName = "lastName";
+
+            var xmlPeople = new XElement("people",
+                                         new XElement(
+                                             "person",
+                                             new XAttribute(id, 0),
+                                             new XElement(firstName, "Michael"),
+                                             new XElement(lastName, "Jordan")
+                                             ),
+                                         new XElement(
+                                             "person",
+                                             new XAttribute(id, 1),
+                                             new XElement(firstName, "Scott"),
+                                             new XElement(lastName, "Pipper")
+                                             ),
+                                         new XElement(
+                                             "person",
+                                             new XAttribute(id, 2),
+                                             new XElement(firstName, "Larry"),
+                                             new XElement(lastName, "Bird")
+                                             )
+                );
+            Console.Write(xmlPeople);
+
+            var peopleList = new List<Person>
+                                {
+                                    new Person(0, "Michael", "Jordan"),
+                                    new Person(1, "Scott", "Pipper"),
+                                    new Person(2, "Larry", "Bird")
+                                };
+
+            var xmlPeople_2 = new XElement("people");
+            foreach (var person in peopleList)
+            {
+                xmlPeople_2.Add(new XElement(
+                                    "person",
+                                    new XAttribute(id, person.Id),
+                                    new XElement(firstName, person.firstName),
+                                    new XElement(lastName, person.lastName)
+                                    )
+                    );
+
+            }
+
+
+            var xmlPeople_3 = new XElement("people",
+                                           peopleList.Select(person => new XElement(
+                                                                           "person",
+                                                                           new XAttribute(id, person.Id),
+                                                                           new XElement(firstName, person.firstName),
+                                                                           new XElement(lastName, person.lastName)
+                                                                           )));
+
+            Console.WriteLine(xmlPeople);
+            Console.WriteLine("--------------------");
+            Console .WriteLine(xmlPeople_2);
+            Console.WriteLine("--------------------");
+            Console.WriteLine(xmlPeople_3);
+            Console.WriteLine("--------------------");
+
+
+
+
+            const string peopleXML = @"<people>
+                              <person Id=""0"">
+                                <firstName>Michael</firstName>
+                                <lastName>Jordan</lastName>
+                              </person>
+                              <person Id=""1"">
+                                <firstName>Scott</firstName>
+                                <lastName>Pipper</lastName>
+                              </person>
+                              <person Id=""2"">
+                                <firstName>Larry</firstName>
+                                <lastName>Bird</lastName>
+                              </person>
+                            </people>";
+            var parsedXML = XElement.Parse(peopleXML);
+
+            Console.WriteLine(parsedXML);
+
+
+            var larry = parsedXML
+                .Descendants("person")
+                .Where(x => x.Attribute("Id").Value == "2")
+                .Single();
+
+            var larryByElements = parsedXML
+                .Elements("person")
+                .Where(x => x.Attribute("Id").Value == "2")
+                .Single();
+            var larryByElementValue = parsedXML
+                .Elements("person")
+                .Where(x => x.Element("firstName").Value == "Larry")
+                .Single();
+            var larryByOperation = parsedXML
+    .Elements("person")
+    .Where(x => x.Element("firstName").Value.StartsWith("Mic"))
+    .Single();
+
+            var larryByOperationReturnList = parsedXML
+                .Elements("person")
+                .Where(x => x.Element("lastName").Value.Contains("i"));
+
+
+            var creatingXElement = new XElement("newPeople",
+                                                parsedXML
+                                                    .Elements("person")
+                                                    .Where(x => x.Element("lastName").Value.Contains("i"))
+                );
+
+
+
+            const string new_peopleXML = @"<people>
+                              <person Id=""0"" address_id=""1"">
+                                <firstName>Michael</firstName>
+                                <lastName>Jordan</lastName>
+                              </person>
+                              <person Id=""1"" address_id=""2"">
+                                <firstName>Scott</firstName>
+                                <lastName>Pipper</lastName>
+                              </person>
+                              <person Id=""2"" address_id=""3"">
+                                <firstName>Larry</firstName>
+                                <lastName>Bird</lastName>
+                              </person>
+                            </people>";
+
+            const string addresses =
+                @"<addresses>
+                    <address id=""1"">
+                        <street>This is the street 1</street>
+                        <city>City 1</city>
+                    </address>
+                    <address id=""2"">
+                        <street>This is the street 2</street>
+                        <city>City 2</city>
+                    </address>
+                    <address id=""3"">
+                        <street>This is the street 3</street>
+                        <city>City 3</city>
+                    </address>
+                </addresses>";
+
+            var addressesXML = XElement.Parse(addresses);
+            var peopleWithAddressXML = XElement.Parse(new_peopleXML);
+            var result = new XElement("people",
+                                      peopleWithAddressXML.Elements("person")
+                                          .Join(addressesXML.Elements("address"),
+                                                p => p.Attribute("address_id").Value,
+                                                a => a.Attribute("id").Value,
+                                                (qq, aa) => new XElement(
+                                                                "person",
+                                                                qq.Element("firstName"),
+                                                                qq.Element("lastName"),
+                                                                aa.Element("street"),
+                                                                aa.Element("city"),
+                                                                new XElement("AddId", aa.Attribute("id").Value)
+                                                                )
+                                          )
+                );
+
+
+            Console.WriteLine("+++++++++++++++++++++++++++++");
+            Console.WriteLine(larry);
+            Console.WriteLine("+++++++++++++++++++++++++++++");
+            Console.WriteLine(larryByElements);
+            Console.WriteLine("+++++++++++++++++++++++++++++");
+            Console.WriteLine(larryByElementValue);
+            Console.WriteLine("+++++++++++++++++++++++++++++");
+            Console.WriteLine(larryByOperation);
+            Console.WriteLine("__________________________");
+            Console.WriteLine(larryByOperationReturnList);
+            Console.WriteLine("+++++++++++++++++++++++++++++");
+            Console.WriteLine(creatingXElement);
+            Console.WriteLine("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+            Console.WriteLine("");
+            Console.WriteLine("");
+            Console.WriteLine("");
+            Console.WriteLine(result);
+            Console.WriteLine("");
+            Console.WriteLine("");
+            Console.WriteLine("");
+            Console.WriteLine("");
+            Console.WriteLine("");
+            Console.WriteLine("");
+
+            Console.WriteLine(result);
+            
+            Console.WriteLine("");
+            Console.WriteLine("");
+            Console.WriteLine("");
+            Console.WriteLine("");
+            Console.WriteLine("");
+
+
+            
+
+
+            if (Xml_people_equals_xml_people2(xmlPeople, xmlPeople_2, xmlPeople_3, parsedXML))
+            {
+                Console.WriteLine("Equal!!!!!!!!!!!!!!!");
+            }
+
+
+
+
+
+
+
+
+
+            Console.Read();
+        }
+
+        private static bool Xml_people_equals_xml_people2(XElement p1, XElement p2, XElement p3, XElement p4)
+        {
+            //return xmlPeople.ToString().CompareTo(xmlPeople_2.ToString()) ==0;
+            return (p1.Value == p2.Value) 
+                && (p2.Value == p3.Value)
+                && (p1.Value == p3.Value)
+                && (p1.Value == p4.Value)
+                && (p2.Value == p4.Value)
+                && (p3.Value == p4.Value);
+        }
+
+        public class Person
+        {
+            public int Id { get; set; }
+            public string firstName { get; set; }
+            public string lastName { get; set; }
+
+            public Person(int id, string firstName, string lastName)
+            {
+                Id = id;
+                this.firstName = firstName;
+                this.lastName = lastName;
+            }
+
+            public Person()
+            {
+
+            }
+        }
+
+
+
+
+
+
+        private static void Lesson_7()
+        {
+            AddCategoriesProducts();
+
+            var category1 = new Category
+                                {
+                                    Id = 0,
+                                    Name = "Hats" 
+                                };
+            var category2 = new Category
+                                {
+                                    Id = 1,
+                                    Name = "Shoes"
+                                };
+            using (var context = new TekPubDataContext())
+            {
+                var products = context.Products.Where(p => p.Name.StartsWith("C")).First();
+                
+                Console.Write(products.Name);
+                //Console.Read();
+
+                //var deleteCategory = new Category
+                //{
+                //    Id = 4,
+                //    Name = "New Category"
+                //};
+                //context.Categories.InsertOnSubmit(deleteCategory);
+
+                var deleteCategory = context.Categories.Where(c => c.Id == 4).Single();
+
+                context.Categories.DeleteOnSubmit(deleteCategory);
+                context.SubmitChanges();
+
+                var hatCategory = context.Categories.Where(c => c.Name == "Hats").First();
+                hatCategory.Name = "Hats";
+                context.SubmitChanges();
+
+            }
+
+            
+
+        }
+
+        private static void AddCategoriesProducts()
+        {
+            using (var context = new TekPubDataContext())
+            {
+
+                var category1 = new Category
+                                    {
+                                        Id = 0,
+                                        Name = "Hats"
+                                    };
+                var category2 = new Category
+                                    {
+                                        Id = 1,
+                                        Name = "Shoes"
+                                    };
+
+                var hatsCategories = context.Categories.Single(u => u.Name == "Hats");
+                var shoesCategories = context.Categories.Single(u => u.Name == "Shoes");
+
+                var product1 = CreateProduct(hatsCategories, "Top Hat", 14);
+                var product2 = CreateProduct(hatsCategories, "Floppy Hat", 15);
+                var product3 = CreateProduct(hatsCategories, "Cowboy Hat", 16);
+                var product4 = CreateProduct(hatsCategories, "Fedora", 17);
+                var product5 = CreateProduct(hatsCategories, "Sneaker", 18);
+                var product6 = CreateProduct(hatsCategories, "High Heel", 19);
+                var product7 = CreateProduct(hatsCategories, "Dress Shoe", 20);
+
+
+                context.Products.InsertOnSubmit(product1);
+                context.Products.InsertOnSubmit(product2);
+                context.Products.InsertOnSubmit(product3);
+                context.Products.InsertOnSubmit(product4);
+                context.Products.InsertOnSubmit(product5);
+                context.Products.InsertOnSubmit(product6);
+                context.Products.InsertOnSubmit(product7);
+
+
+                context.SubmitChanges();
+            }
+
+        }
+
+        private static Product CreateProduct(Category hatsCategories, string name, int id)
+        {
+            return new Product()
+            {
+                Id = id,
+                Name = name,
+                Category = hatsCategories,
+                CategoryId = 0
+            };
+            
+            return new Product()
+                       {
+                           Id = id,
+                           Name = name,
+                           Category = hatsCategories
+                       };
+        }
+
+
+        private static void Lesson_6()
+        {
+
+            // ToList // ToArray // ToDictionary 
+
+            // ToLookUp: Grouping! Powerfull! Grouping elements by a key, or properties of the elements by anykey.
+            // ToLookUp: WATCH OUT! Forces Execution! Go for GroupBy instead, which is delayed execution!
+
+            // GroupBy: Faster (do not force execution) and more flexible: Allows operations. Amazing to group and perform ops in the groups
+
+            // Join: As expected in SQL
+
+            // GroupJoin: Similar to Join but with Group capabilities - Instead of returning a table, where on the left side we repeat the values, and on the
+            // right side, the unique values, here we are grouping. So, every object is composed of a name, and a list ob elements. In the Join, the 
+            // is a list of name and unique element. Allows Right/Left join --> REQUIRES DETAILED STUDY :D
+
+            // Zip: 4.0
+
+
+            // Cast
+
+
+             
+            var users = LoadUsers();
+            var userList = users.Select(u => u).ToList();
+            var userArray = users.Select(u => u).ToArray();
+            var userDictionary_v1 = users.Select(u => u).ToDictionary(u => u.Id);
+            var userDictionary_v2 = users.Select(u => u).ToDictionary(u => u.Id, u => u.Location);
+            var userLookUp = users.Select(u => u).ToLookup(u => u.Location, u => u.Id).Where(u => u.Count() == 3);
+            var userGroupsByAge = users.ToLookup(u => u.Age).OrderBy(u => u.Key);
+
+            var userGroupsUsers_By_Age = users.GroupBy(u => u.Age).OrderBy(u => u.Key);
+            var userGroupsNames_By_Age = users.GroupBy(u => u.Age,u => u.DisplayName).OrderBy(u => u.Key);
+            var userGroupsNames_By_Age_Return_Operation = users.GroupBy(
+                u => u.Age,
+                u => u,
+                (age, uList) => new
+                                       {
+                                           Age = age,
+                                           UpVoteAverage = uList.Select(u => u.UpVotes).Average(),
+                                           DwnVoteAverage = uList.Select(u => u.DownVotes).Average()
+                                       }
+                ).OrderBy( u=> u.Age);
+
+            var userGroupsNames_By_Age_VoteAveage = users.GroupBy(
+                u => u.Age,
+                u => u.UpVotes,
+                (age, upVotes) => new
+                                      {
+                                          Age = age,
+                                          UpVoteAverage = upVotes.Average()
+                                      }
+                ).OrderBy(u => u.Age);
+
+            //var first10Users = users.Take(10);
+            //var second10Users = users.Take(20).Skip(10);
+            //var zippedUsers = first10Users.Zip(second10Users, (firsts, seconds) => firsts + " " + seconds);
+
+
+            // CONVERSATION OPERATIONS
+            // Cast and OfType
+
+            // Concat
+
+            var list = new ArrayList();
+            list.Add(1);
+            list.Add("2");
+            list.Add(3);
+            list.Add(4);
+            list.Add(5);
+
+            // Exception, it can't cast "2" to Integer
+            var strongTypeList = list.Cast<int>().Select(U => U);
+
+            // It filters the "2"
+            var intStrongTypeList = list.OfType<int>().Select(U => U);
+
+            // It filters all the numbers
+            var stringStrongTypeList = list.OfType<string>().Select(U => U);
+
+            //var list1 = new[] {1,2,3};
+            var list1 = new[] { "4","5","6"};
+            var list2 = new[] { "4", "5", "6" };
+            var list3 = list1.Concat(list2);
+
+            //foreach(var element in userDictionary_v2)
+            //{
+            //    Console.WriteLine("{0} - {1}",element.Key, element.Value);
+            //}
+            Console.WriteLine("\n _______ \n");
+            foreach (var group in userLookUp)
+            {
+
+                Console.Write("Loc: {0} \t",group.Key );
+                foreach (var id in group)
+                {
+                    //Console.Write(id + ",");
+                }
+                Console.Write("\n");
+            }
+
+            Console.WriteLine("\n _______ \n");
+            foreach (var ageGroup in userGroupsByAge)
+            {
+                //Console.WriteLine("Age: {0} \t {1}", ageGroup.Key,ageGroup.Count());
+            }
+
+            Console.WriteLine("\n _______ \n");
+            foreach (var ageGroup in userGroupsNames_By_Age)
+            {
+                //Console.WriteLine("Age: {0} \t {1}", ageGroup.Key, ageGroup.Count());
+            }
+
+
+            Console.WriteLine("\n _______ \n");
+            foreach (var ageVoteAverage in userGroupsNames_By_Age_Return_Operation)
+            {
+                Console.WriteLine("Age: {0} \t Uvt: {1} \t Dvt: {2}", ageVoteAverage.Age, ageVoteAverage.UpVoteAverage,ageVoteAverage.DwnVoteAverage);
+            }
+
+            Console.Read();
+
+        }
+
         private static  void Lesson_5_1s()
         {
-            // Distinct
-            // Contains
-            // Intersect/Exceptions/
+            // Quantifying Operators
+            //QuantifyingOperators();
 
-            // UNIQUE locations COMBINING 2 groups
-            // CheckUnions();
+            // OrderOperators
+            //OrderOperators();
 
-            // Locations in one group NOT present in other group
-            // CheckExceptions();
-
-            // Locations in one group ALSO present in other group
-            // CheckIntersections();
+            // SelectOperators: ElementAt/Contains/Distinct/Intersect/Except/Union
+            SelectOperators();
 
             // Playing with Except/Intersect/Union
             //CheckNotPresentLocations();
 
             // SelectMany
-            SelectMany();
+            //SelectMany(): 
         }
 
 
+        private static void SelectOperators()
+        {
+            var users = LoadUsers();
+            
+            var distinct = users.Take(500).Select(u => u.Location).Distinct();
+            Console.Write("Distinct Countries: {0}", distinct.Count());
+
+            const string country = "Spain";
+            var contains = users.Take(556).Select(u => u.Location).Contains(country);
+            var firstSpanishUser = users.ElementAt(555);
+            Console.Write(firstSpanishUser);
+
+            Console.Write("\n------\n");
+
+            var first50SpanishUserAges = users.Where(u => u.Location == "Spain").Select(u => u.Age).Take(50);
+            var first50FrenchUserAges = users.Where(u => u.Location == "France").Select(u => u.Age).Take(50);
+
+            var agesInSpainNotInFrance = first50SpanishUserAges.Except(first50FrenchUserAges);
+            var agesInBoth = first50SpanishUserAges.Intersect(first50FrenchUserAges);
+
+            var unitingAges = agesInSpainNotInFrance.Union(agesInBoth);
+
+
+            Console.Write("\n------\n");
+            Console.Write("\nOnly in Spain\n");
+            foreach (var age in agesInSpainNotInFrance)
+            {
+                Console.WriteLine(age);
+            }
+
+
+            Console.Write("\n------\n");
+            Console.Write("\nAges in Both\n");
+            foreach (var age in agesInBoth)
+            {
+                Console.WriteLine(age);
+            }
+
+            Console.Write("\nAges in France\n");
+            Console.Write("\n------\n");
+            foreach (var user in first50FrenchUserAges)
+            {
+                Console.WriteLine(user);
+            }
+
+            var firstSpanishUserBetterWay = users.First(u => u.Location == "Spain");
+            Console.Write("\n------\n");
+            Console.Write("\nFirst Spanish User In a Better way\n");
+
+            Console.Write(firstSpanishUserBetterWay);
+
+            Console.Write("\nContains {0}?: {1}", country, contains);
+
+            //var result = defaultIfEmpty.First();
+
+            var ownUsers = new[]{
+                                   new
+                                   {
+                                           u = 1,
+                                           numbers = new[] {1, 2, 3, 4}
+                                       },
+                                   new
+                                   {
+                                           u = 2,
+                                           numbers = new[] {5, 6, 7, 8}
+                                       },
+                                   new
+                                   {
+                                           u = 3,
+                                           numbers = new[] {9, 10, 12, 13}
+                                       }
+                               };
+
+            Console.Write("\n---SELECT MANY ---\n");
+            var numbersFromUser1stOverload = ownUsers.SelectMany(u => u.numbers);
+            var numbersFromUser2ndOverload = ownUsers.SelectMany(u => u.numbers, (u,b) => "Num: " + u.u + " NumbList: " + b);
+            var numbersFromUserd = ownUsers.SelectMany(u =>
+                                                           {
+                                                               return new[] {u.u}; // Converting the number into a list
+                                                           });
+
+            var usingTheDataInsie = ownUsers.SelectMany( u => u.numbers.Select( a => "The Number: " + a.ToString() ) );
+            Console.Write("\nAS LONG AS YOU SELECT A LIST, YOU ARE FINE! :\n");
+            foreach (var number in usingTheDataInsie)
+            {
+                Console.WriteLine(number);
+            }
+            Console.Write("\nEND--SELECT MANY --END\n");
+
+            foreach (var number in numbersFromUser1stOverload)
+            {
+                Console.WriteLine(number);
+            }
+            Console.Write("\nEND--SELECT MANY --END\n");
+
+            foreach (var number in numbersFromUser2ndOverload)
+            {
+                Console.WriteLine(number);
+            }
+
+            Console.Write("\nEND--SELECT MANY --END\n");
+            foreach (var number in numbersFromUserd)
+            {
+                Console.WriteLine(number);
+            }
+
+
+
+
+            //Console.Write(result);
+            Console.Read();
+        }
+
+        private static void OrderOperators()
+        {
+            var users = LoadUsers();
+            var single = users.Take(500).Where(u => u.Id == 5).Single();
+            var singleOrDefault = users.Take(500).Where(u => u.Id == -5).SingleOrDefault();
+            var first = users.Take(500).Where(u => u.Id > 5).First();
+            var firstOrDefault = users.Take(500).Where(u => u.Id < -5).FirstOrDefault();
+
+            var last = users.Take(500).Where(u => u.Id < 5).Last();
+            var lastOrDefault = users.Take(500).Where(u => u.Id < -5).LastOrDefault();
+
+            var elementAt = users.ElementAt(0);
+            var elementAtOrDefault = users.ElementAtOrDefault(-1);
+
+            var defaultIfEmpty = users.Where(u => u.Id < -5).DefaultIfEmpty();
+
+
+            var result = defaultIfEmpty.First();
+
+
+            Console.Write(result);
+            Console.Read();
+        }
+
+        private static void QuantifyingOperators()
+        {
+            var users = LoadUsers();
+            var isAny = users.Take(500).Any(u => u.Location == "Francia");
+
+            var all = users.Take(10).All(u => u.Id < 50);
+
+            Console.WriteLine("Any: " + isAny);
+            Console.WriteLine("All: " + all);
+
+            Console.Read();
+
+        }
         private static void SelectMany()
         {
             var users = LoadUsers();
@@ -495,7 +1132,7 @@ namespace DesignPatterns_HeadFirst
 
         private static IEnumerable<User> LoadUsers()
         {
-            var xdoc = XDocument.Load(@"../../Files/users.xml");
+            var xdoc = XDocument.Load(@"../../../../Files/users.xml");
             var userMapper = new UserMapper();
             return userMapper.Map(xdoc.Descendants("row"));
         }
